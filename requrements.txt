@@ -1,0 +1,6 @@
+streamlit
+openai
+pandas
+fpdf
+io
+datetime
