@@ -5,14 +5,15 @@ from fpdf import FPDF
 import io
 import datetime
 
-# OpenAI 클라이언트 초기화
-client = OpenAI(api_key=st.secrets["openai"]["api_key"])
-# 데이터베이스 대신 세션 상태를 사용
+# 세션 상태 초기화
 if 'students' not in st.session_state:
     st.session_state.students = {}
 
 if 'reports' not in st.session_state:
     st.session_state.reports = {}
+
+# OpenAI 클라이언트 초기화
+client = OpenAI(api_key=st.secrets["openai_api_key"])
 
 def generate_report(student_info, activities, template):
     prompt = f"""
@@ -31,7 +32,7 @@ def generate_report(student_info, activities, template):
     
     try:
         completion = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4",  # 올바른 모델명으로 수정
             messages=[
                 {"role": "system", "content": "당신은 학생들의 자율활동 보고서를 작성하는 전문가입니다."},
                 {"role": "user", "content": prompt}
@@ -45,10 +46,11 @@ def generate_report(student_info, activities, template):
 def create_pdf(student_name, report_text):
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("Arial", size=12)
+    pdf.add_font('NanumGothic', '', 'NanumGothic.ttf', uni=True)
+    pdf.set_font("NanumGothic", size=12)
     pdf.cell(200, 10, txt=f"자율활동 세부능력 및 특기사항: {student_name}", ln=1, align='C')
     pdf.multi_cell(0, 10, txt=report_text)
-    return pdf.output(dest='S').encode('latin-1')
+    return pdf.output(dest='S').encode('utf-8')
 
 st.title("자율활동 세부능력 및 특기사항 생성기")
 
