@@ -13,7 +13,7 @@ if 'reports' not in st.session_state:
     st.session_state.reports = {}
 
 # OpenAI 클라이언트 초기화
-client = OpenAI(api_key=st.secrets["openai_api_key"])
+client = OpenAI(api_key=st.secrets["openai"]["api_key"])
 
 def generate_report(student_info, activities, template):
     prompt = f"""
