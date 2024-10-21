@@ -70,7 +70,7 @@ def save_report(student_id, report):
 st.title("자율활동 세부능력 및 특기사항 생성기")
 
 # 사이드바 메뉴
-menu = st.sidebar.selectbox("메뉴 선택", ["학생 정보 관리", "보고서 생성", "보고서 히스토리"])
+menu = st.sidebar.selectbox("메뉴 선택", ["학생 정보 관리", "세특 생성", "세특 생성 히스토리"])
 
 if menu == "학생 정보 관리":
     st.subheader("학생 정보 관리")
@@ -100,7 +100,7 @@ elif menu == "세특 생성":
         activities[category] = st.text_area(f"{category} 내용:")
     
     templates = ["상세형", "요약형", "성과중심형"]
-    selected_template = st.selectbox("보고서 템플릿 선택", templates)
+    selected_template = st.selectbox("세특 템플릿 선택", templates)
     
     if st.button("세특 생성"):
         if student_info and any(activities.values()):
@@ -163,5 +163,5 @@ st.sidebar.write("""
 3. 원하는 세특 템플릿을 선택하고 '세특 생성' 버튼을 클릭합니다.
 4. 생성된 세특을 확인하고 필요한 경우 수정합니다.
 5. '수정된 세특 저장' 버튼을 클릭하여 세특을 저장하고 PDF로 다운로드할 수 있습니다.
-6. '세특 히스토리' 메뉴에서 이전에 생성한 세특들을 확인하고 PDF 또는 엑셀 형식으로 다운로드할 수 있습니다.
+6. '세특 생성 히스토리' 메뉴에서 이전에 생성한 세특들을 확인하고 PDF 또는 엑셀 형식으로 다운로드할 수 있습니다.
 """)
