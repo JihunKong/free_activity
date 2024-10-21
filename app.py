@@ -1,13 +1,12 @@
 import streamlit as st
-import openai as OpenAI
+from openai import OpenAI
 import pandas as pd
-import fpdf as FPDF
+from fpdf import FPDF
 import io
 import datetime
 
 # OpenAI 클라이언트 초기화
 client = OpenAI(api_key=st.secrets["openai"]["api_key"])
-
 # 데이터베이스 대신 세션 상태를 사용
 if 'students' not in st.session_state:
     st.session_state.students = {}
