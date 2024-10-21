@@ -1,7 +1,7 @@
 import streamlit as st
-from openai import OpenAI
+import openai as OpenAI
 import pandas as pd
-from fpdf import FPDF
+import fpdf as FPDF
 import io
 import datetime
 
