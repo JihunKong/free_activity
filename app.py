@@ -140,5 +140,28 @@ elif menu == "세특 생성 히스토리":
                 label=f"PDF 다운로드 {i+1}",
                 data=create_pdf(st.session_state.students[student_id]['name'], report['report']),
                 file_name=f"{st.session_state.students[student_id]['name']}_활동보고서_{report['timestamp']}.pdf",
-  특 히스토리' 메뉴에서 이전에 생성한 보고서들을 확인하고 PDF 또는 엑셀 형식으로 다운로드할 수 있습니다.
+                mime="application/pdf"
+            )
+            reports_data.append({"timestamp": report['timestamp'], "report": report['report']})
+        
+        # 엑셀 다운로드 버튼 추가
+        df = pd.DataFrame(reports_data)
+        excel_data = to_excel(df)
+        st.download_button(
+            label="엑셀로 모든 세특 다운로드",
+            data=excel_data,
+            file_name=f"{st.session_state.students[student_id]['name']}_모든_세특.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+    else:
+        st.info("저장된 세특이 없습니다.")
+
+st.sidebar.header("사용 안내")
+st.sidebar.write("""
+1. '학생 정보 관리' 메뉴에서 학생 정보를 입력하고 저장합니다.
+2. '세특 생성' 메뉴에서 학생을 선택하고 활동 내용을 입력합니다.
+3. 원하는 세특 템플릿을 선택하고 '세특 생성' 버튼을 클릭합니다.
+4. 생성된 세특을 확인하고 필요한 경우 수정합니다.
+5. '수정된 세특 저장' 버튼을 클릭하여 세특을 저장하고 PDF로 다운로드할 수 있습니다.
+6. '세특 히스토리' 메뉴에서 이전에 생성한 세특들을 확인하고 PDF 또는 엑셀 형식으로 다운로드할 수 있습니다.
 """)
