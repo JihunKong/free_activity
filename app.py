@@ -4,6 +4,7 @@ import pandas as pd
 from fpdf import FPDF
 import io
 import datetime
+from io import BytesIO
 
 # 세션 상태 초기화
 if 'students' not in st.session_state:
@@ -28,11 +29,12 @@ def generate_report(student_info, activities, template):
     학생의 자기주도성, 리더십, 공동체 의식, 문제해결 능력 등이 잘 드러나도록 작성해주세요.
     구체적인 활동 내용과 그로 인한 성과, 학생의 성장을 포함해주세요.
     제공된 템플릿의 스타일을 따라주세요.
+    모든 문장은 '-함.', '-음.', '-됨.' 등으로 끝나야 합니다.
     """
     
     try:
         completion = client.chat.completions.create(
-            model="gpt-4o-mini",  # 올바른 모델명으로 수정
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": "당신은 학생들의 자율활동 보고서를 작성하는 전문가입니다."},
                 {"role": "user", "content": prompt}
@@ -51,6 +53,13 @@ def create_pdf(student_name, report_text):
     pdf.cell(200, 10, txt=f"자율활동 세부능력 및 특기사항: {student_name}", ln=1, align='C')
     pdf.multi_cell(0, 10, txt=report_text)
     return pdf.output(dest='S').encode('utf-8')
+
+def to_excel(df):
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Sheet1')
+    processed_data = output.getvalue()
+    return processed_data
 
 st.title("자율활동 세부능력 및 특기사항 생성기")
 
@@ -118,6 +127,7 @@ elif menu == "보고서 히스토리":
     st.subheader("보고서 히스토리")
     student_id = st.selectbox("학생 선택", list(st.session_state.students.keys()))
     if student_id in st.session_state.reports:
+        reports_data = []
         for i, report in enumerate(st.session_state.reports[student_id]):
             st.write(f"보고서 {i+1} - {report['timestamp']}")
             st.text_area(f"보고서 내용 {i+1}", report['report'], height=150)
@@ -127,6 +137,17 @@ elif menu == "보고서 히스토리":
                 file_name=f"{st.session_state.students[student_id]['name']}_활동보고서_{report['timestamp']}.pdf",
                 mime="application/pdf"
             )
+            reports_data.append({"timestamp": report['timestamp'], "report": report['report']})
+        
+        # 엑셀 다운로드 버튼 추가
+        df = pd.DataFrame(reports_data)
+        excel_data = to_excel(df)
+        st.download_button(
+            label="엑셀로 모든 보고서 다운로드",
+            data=excel_data,
+            file_name=f"{st.session_state.students[student_id]['name']}_모든_보고서.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
     else:
         st.info("저장된 보고서가 없습니다.")
 
@@ -137,5 +158,5 @@ st.sidebar.write("""
 3. 원하는 보고서 템플릿을 선택하고 '보고서 생성' 버튼을 클릭합니다.
 4. 생성된 보고서를 확인하고 필요한 경우 수정합니다.
 5. '수정된 보고서 저장' 버튼을 클릭하여 보고서를 저장하고 PDF로 다운로드할 수 있습니다.
-6. '보고서 히스토리' 메뉴에서 이전에 생성한 보고서들을 확인하고 다운로드할 수 있습니다.
+6. '보고서 히스토리' 메뉴에서 이전에 생성한 보고서들을 확인하고 PDF 또는 엑셀 형식으로 다운로드할 수 있습니다.
 """)
