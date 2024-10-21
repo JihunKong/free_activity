@@ -32,7 +32,7 @@ def generate_report(student_info, activities, template):
     
     try:
         completion = client.chat.completions.create(
-            model="gpt-4",  # 올바른 모델명으로 수정
+            model="gpt-4o-mini",  # 올바른 모델명으로 수정
             messages=[
                 {"role": "system", "content": "당신은 학생들의 자율활동 보고서를 작성하는 전문가입니다."},
                 {"role": "user", "content": prompt}
